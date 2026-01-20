@@ -91,7 +91,7 @@ Feel free to open issues or PRs. The code is pretty straightforward, most of the
 
 ## License
 
-MIT - do whatever you want with it
+MIT 
 
 ---
 
