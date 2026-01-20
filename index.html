@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gitfolio - Turn GitHub into a Portfolio</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- dark mode toggle - works across all pages -->
+    <div class="theme-toggle">
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark mode">
+            <span class="theme-icon">☀️</span>
+        </button>
+    </div>
+
+    <!-- landing page -->
+    <div id="landing" class="page active">
+        <div class="landing-container">
+            <div class="logo-section">
+                <h1 class="logo">gitfolio</h1>
+                <p class="tagline">Turn your GitHub into a stunning portfolio in seconds</p>
+            </div>
+            
+            <div class="input-section">
+                <div class="input-wrapper">
+                    <span class="input-prefix">github.com/</span>
+                    <input 
+                        type="text" 
+                        id="username-input" 
+                        placeholder="your-username"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                </div>
+                <button id="generate-btn" class="primary-btn">
+                    Generate <span class="arrow">→</span>
+                </button>
+            </div>
+            
+            <p class="hint">No signup needed. Just enter your username and go.</p>
+            
+            <div class="features-preview">
+                <div class="feature">
+                    <span class="feature-icon">🎨</span>
+                    <span>3 templates</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⚡</span>
+                    <span>SEO ready</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📦</span>
+                    <span>One-click export</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- loading page -->
+    <div id="loading" class="page">
+        <div class="loading-container">
+            <div class="loading-icon">🚀</div>
+            <h2 id="loading-text">Fetching your repos...</h2>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="progress-status" class="progress-status">Connecting to GitHub...</p>
+        </div>
+    </div>
+
+    <!-- main editor page -->
+    <div id="editor" class="page">
+        <div class="editor-layout">
+            <!-- sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-logo">gitfolio</h2>
+                    <button id="back-btn" class="icon-btn" title="Start over">←</button>
+                </div>
+
+                <div class="sidebar-content">
+                    <!-- template selection -->
+                    <section class="panel">
+                        <h3 class="panel-title">Template</h3>
+                        <div class="template-options">
+                            <button class="template-btn active" data-template="minimal">
+                                <span class="template-preview minimal-preview"></span>
+                                <span>Minimal</span>
+                            </button>
+                            <button class="template-btn" data-template="dark">
+                                <span class="template-preview dark-preview"></span>
+                                <span>Developer</span>
+                            </button>
+                            <button class="template-btn" data-template="creative">
+                                <span class="template-preview creative-preview"></span>
+                                <span>Creative</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- colors -->
+                    <section class="panel">
+                        <h3 class="panel-title">Colors</h3>
+                        <div class="color-options">
+                            <div class="color-field">
+                                <label for="primary-color">Primary</label>
+                                <input type="color" id="primary-color" value="#6366f1">
+                            </div>
+                            <div class="color-field">
+                                <label for="accent-color">Accent</label>
+                                <input type="color" id="accent-color" value="#22d3ee">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- bio -->
+                    <section class="panel">
+                        <h3 class="panel-title">About You</h3>
+                        <textarea id="bio-input" placeholder="Write a short bio..." rows="3"></textarea>
+                        
+                        <div class="social-inputs">
+                            <input type="text" id="linkedin-input" placeholder="LinkedIn URL">
+                            <input type="text" id="twitter-input" placeholder="Twitter handle">
+                            <input type="email" id="email-input" placeholder="Email address">
+                        </div>
+                    </section>
+
+                    <!-- project filters -->
+                    <section class="panel">
+                        <h3 class="panel-title">Projects</h3>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="filter-starred">
+                                <span>Only starred repos</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="filter-no-forks" checked>
+                                <span>Hide forks</span>
+                            </label>
+                        </div>
+                        
+                        <div class="sort-field">
+                            <label for="sort-select">Sort by</label>
+                            <select id="sort-select">
+                                <option value="stars">Stars</option>
+                                <option value="updated">Recently updated</option>
+                                <option value="name">Name</option>
+                            </select>
+                        </div>
+
+                        <div class="featured-section">
+                            <label>Featured projects (max 6)</label>
+                            <div id="featured-list" class="featured-list">
+                                <!-- filled by js -->
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button id="export-btn" class="primary-btn full-width">
+                        Export Portfolio
+                    </button>
+                </div>
+            </aside>
+
+            <!-- preview area -->
+            <main class="preview-area">
+                <div class="preview-toolbar">
+                    <div class="preview-tabs">
+                        <button class="preview-tab active" data-view="desktop">Desktop</button>
+                        <button class="preview-tab" data-view="mobile">Mobile</button>
+                    </div>
+                    <div class="preview-actions">
+                        <button id="compare-btn" class="text-btn">Compare templates</button>
+                        <button id="refresh-preview" class="icon-btn" title="Refresh">↻</button>
+                    </div>
+                </div>
+                <div class="preview-frame-wrapper">
+                    <iframe id="preview-frame" class="preview-frame"></iframe>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- export modal -->
+    <div id="export-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal">×</button>
+            <div class="modal-icon">🎉</div>
+            <h2>Your portfolio is ready!</h2>
+            <p class="modal-desc">Choose how you want to get your portfolio</p>
+            
+            <div class="export-options">
+                <button id="download-html" class="export-btn">
+                    <span class="export-icon">📥</span>
+                    <span class="export-label">Download HTML</span>
+                    <span class="export-desc">Single file, ready to host</span>
+                </button>
+                
+                <button id="copy-html" class="export-btn">
+                    <span class="export-icon">📋</span>
+                    <span class="export-label">Copy to Clipboard</span>
+                    <span class="export-desc">Paste anywhere</span>
+                </button>
+                
+                <button id="deploy-netlify" class="export-btn">
+                    <span class="export-icon">🚀</span>
+                    <span class="export-label">Deploy to Netlify</span>
+                    <span class="export-desc">Free hosting in seconds</span>
+                </button>
+            </div>
+
+            <div class="deploy-instructions" id="deploy-instructions" style="display:none;">
+                <h3>Deploy Instructions</h3>
+                <div id="instructions-content"></div>
+            </div>
+
+            <div class="qr-section">
+                <p>Preview on mobile</p>
+                <div id="qr-code" class="qr-placeholder"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- compare modal -->
+    <div id="compare-modal" class="modal">
+        <div class="modal-content wide">
+            <button class="modal-close" id="close-compare">×</button>
+            <h2>Compare Templates</h2>
+            <div class="compare-grid">
+                <div class="compare-item">
+                    <h3>Minimal</h3>
+                    <iframe id="compare-minimal" class="compare-frame"></iframe>
+                    <div class="compare-stats">
+                        <span>Load time: ~0.8s</span>
+                        <span>Mobile: ✓</span>
+                    </div>
+                </div>
+                <div class="compare-item">
+                    <h3>Developer</h3>
+                    <iframe id="compare-dark" class="compare-frame"></iframe>
+                    <div class="compare-stats">
+                        <span>Load time: ~1.2s</span>
+                        <span>Mobile: ✓</span>
+                    </div>
+                </div>
+                <div class="compare-item">
+                    <h3>Creative</h3>
+                    <iframe id="compare-creative" class="compare-frame"></iframe>
+                    <div class="compare-stats">
+                        <span>Load time: ~1.0s</span>
+                        <span>Mobile: ✓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- error toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/github-api.js"></script>
+    <script src="js/template-engine.js"></script>
+    <script src="js/seo-generator.js"></script>
+    <script src="js/export-handler.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
